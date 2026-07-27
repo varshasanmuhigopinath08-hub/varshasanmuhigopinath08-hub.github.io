@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Varsha Sanmuhi G — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F1225;
+    --surface:#171B36;
+    --surface2:#1F2447;
+    --text:#F5F3FF;
+    --muted:#9498C4;
+    --cyan:#6EE7F9;
+    --coral:#FF6B6B;
+    --yellow:#FFD166;
+    --border:#2C3160;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--cyan);color:var(--bg);}
+
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .display{font-family:'Space Grotesk',sans-serif;}
+
+  /* ---------- Nav ---------- */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:22px 6vw;
+    transition:background .3s ease, border-color .3s ease, padding .3s ease;
+    border-bottom:1px solid transparent;
+  }
+  nav.scrolled{
+    background:rgba(15,18,37,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+    padding:14px 6vw;
+  }
+  .logo{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:15px;letter-spacing:1px;color:var(--text);text-decoration:none;}
+  .logo span{color:var(--cyan);}
+  .nav-links{display:flex;gap:32px;list-style:none;}
+  .nav-links a{
+    color:var(--muted);text-decoration:none;font-size:13px;
+    font-family:'JetBrains Mono',monospace;letter-spacing:.5px;
+    transition:color .2s ease;
+  }
+  .nav-links a:hover{color:var(--cyan);}
+  @media(max-width:720px){.nav-links{display:none;}}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:0 6vw;
+    position:relative;
+    overflow:hidden;
+  }
+  #hero-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.55;}
+  .hero-inner{position:relative;z-index:2;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;color:var(--cyan);
+    font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:'';width:24px;height:1px;background:var(--cyan);}
+  .hero h1{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:clamp(42px,9vw,104px);
+    line-height:.98;letter-spacing:-2px;
+    color:var(--text);
+  }
+  .hero h1 .accent{color:var(--coral);}
+  .hero p.tagline{
+    margin-top:26px;font-size:clamp(16px,2vw,20px);color:var(--muted);
+    max-width:560px;line-height:1.6;
+  }
+  .hero-cta{margin-top:40px;display:flex;gap:16px;flex-wrap:wrap;}
+  .btn{
+    font-family:'JetBrains Mono',monospace;font-size:14px;
+    padding:14px 26px;border-radius:2px;text-decoration:none;
+    display:inline-flex;align-items:center;gap:8px;
+    transition:transform .2s ease, background .2s ease;
+    border:1px solid var(--border);
+  }
+  .btn-primary{background:var(--cyan);color:var(--bg);border-color:var(--cyan);font-weight:500;}
+  .btn-primary:hover{transform:translateY(-2px);}
+  .btn-ghost{color:var(--text);}
+  .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-2px);}
+  .scroll-cue{
+    position:absolute;bottom:44px;left:6vw;
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);
+    display:flex;align-items:center;gap:10px;letter-spacing:1px;
+  }
+  .scroll-cue .line{width:1px;height:34px;background:var(--muted);animation:pulse-line 1.8s ease-in-out infinite;}
+  @keyframes pulse-line{0%,100%{transform:scaleY(1);opacity:.5;}50%{transform:scaleY(.4);opacity:1;}}
+
+  /* ---------- Sections ---------- */
+  section{padding:130px 6vw;position:relative;}
+  .section-head{display:flex;align-items:baseline;gap:18px;margin-bottom:56px;}
+  .section-num{font-family:'JetBrains Mono',monospace;color:var(--coral);font-size:14px;}
+  .section-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(30px,4vw,46px);letter-spacing:-1px;}
+  .section-rule{flex:1;height:1px;background:var(--border);}
+
+  /* ---------- Shatter reveal ---------- */
+  .shatter-target{position:relative;}
+  .shatter-overlay{position:absolute;inset:0;display:grid;pointer-events:none;z-index:5;}
+  .shatter-tile{
+    transform:translate(var(--dx),var(--dy)) rotate(var(--rot));
+    opacity:1;
+    transition:transform .65s cubic-bezier(.22,.9,.3,1), opacity .5s ease;
+    transition-delay:var(--delay);
+  }
+  .shatter-target.revealed .shatter-tile{
+    transform:translate(0,0) rotate(0deg);
+    opacity:0;
+  }
+  @media (prefers-reduced-motion:reduce){
+    .shatter-tile{transition:opacity .3s ease !important;transform:none !important;}
+  }
+
+  /* ---------- About ---------- */
+  .about-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:70px;align-items:start;}
+  .about-text p{font-size:18px;line-height:1.85;color:var(--muted);margin-bottom:20px;}
+  .about-text strong{color:var(--text);font-weight:500;}
+  .stat-card{
+    background:var(--surface);border:1px solid var(--border);
+    padding:22px 24px;margin-bottom:14px;
+  }
+  .stat-card .num{font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:600;color:var(--cyan);}
+  .stat-card .label{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:.5px;}
+  @media(max-width:900px){.about-grid{grid-template-columns:1fr;}}
+
+  /* ---------- Experience ---------- */
+  .exp-item{
+    display:grid;grid-template-columns:200px 1fr;gap:40px;
+    padding:32px 0;border-top:1px solid var(--border);
+  }
+  .exp-item:last-child{border-bottom:1px solid var(--border);}
+  .exp-date{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--coral);}
+  .exp-role{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:600;margin-bottom:4px;}
+  .exp-org{font-size:14px;color:var(--muted);margin-bottom:16px;}
+  .exp-item ul{list-style:none;}
+  .exp-item li{position:relative;padding-left:20px;margin-bottom:10px;font-size:15px;color:var(--muted);line-height:1.6;}
+  .exp-item li::before{content:'';position:absolute;left:0;top:9px;width:6px;height:6px;background:var(--cyan);}
+  @media(max-width:720px){.exp-item{grid-template-columns:1fr;gap:12px;}}
+
+  /* ---------- Projects (horizontal scroll) ---------- */
+  .projects-scroll{
+    display:flex;gap:24px;overflow-x:auto;padding-bottom:24px;
+    scroll-snap-type:x mandatory;
+    margin:0 -6vw;padding-left:6vw;padding-right:6vw;
+  }
+  .projects-scroll::-webkit-scrollbar{height:6px;}
+  .projects-scroll::-webkit-scrollbar-thumb{background:var(--border);}
+  .project-card{
+    scroll-snap-align:start;
+    min-width:340px;max-width:340px;
+    background:var(--surface);border:1px solid var(--border);
+    padding:32px;display:flex;flex-direction:column;
+    position:relative;overflow:hidden;
+  }
+  .project-tag{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--yellow);
+    letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;
+  }
+  .project-card h3{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:600;margin-bottom:14px;}
+  .project-card p{font-size:14.5px;color:var(--muted);line-height:1.65;flex:1;}
+  .project-stack{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;}
+  .chip{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cyan);
+    border:1px solid var(--border);padding:5px 10px;
+  }
+  .scroll-hint{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-top:16px;display:flex;align-items:center;gap:8px;}
+
+  /* ---------- Hackathons ---------- */
+  .hack-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .hack-card{
+    background:var(--surface);border:1px solid var(--border);
+    padding:28px;position:relative;
+  }
+  .hack-badge{
+    display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;
+    padding:5px 10px;margin-bottom:16px;letter-spacing:.5px;
+  }
+  .hack-badge.top{background:rgba(255,209,102,.12);color:var(--yellow);}
+  .hack-badge.runner{background:rgba(255,107,107,.12);color:var(--coral);}
+  .hack-badge.part{background:rgba(110,231,249,.12);color:var(--cyan);}
+  .hack-card h3{font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:600;margin-bottom:10px;}
+  .hack-card p{font-size:14px;color:var(--muted);line-height:1.6;}
+  @media(max-width:820px){.hack-grid{grid-template-columns:1fr;}}
+
+  /* ---------- Skills ---------- */
+  .skills-wrap{display:flex;flex-wrap:wrap;gap:12px;}
+  .skill-tag{
+    font-family:'JetBrains Mono',monospace;font-size:14px;
+    border:1px solid var(--border);padding:10px 18px;color:var(--text);
+    transition:border-color .2s ease, color .2s ease;
+  }
+  .skill-tag:hover{border-color:var(--cyan);color:var(--cyan);}
+
+  /* ---------- Contact ---------- */
+  .contact-section{text-align:left;}
+  .contact-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(36px,6vw,64px);letter-spacing:-1.5px;margin-bottom:24px;}
+  .contact-title .accent{color:var(--cyan);}
+  .contact-sub{color:var(--muted);font-size:17px;max-width:480px;margin-bottom:44px;line-height:1.7;}
+  .contact-links{display:flex;flex-wrap:wrap;gap:16px;}
+
+  footer{
+    padding:32px 6vw;border-top:1px solid var(--border);
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);
+    flex-wrap:wrap;gap:12px;
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="#top" class="logo">VS<span>·</span>25</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#hackathons">Hackathons</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<header class="hero" id="top">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-inner">
+    <div class="eyebrow">Computer science + data science</div>
+    <h1>VARSHA<br>SANMUHI <span class="accent">G.</span></h1>
+    <p class="tagline">CS undergrad building things at the intersection of data, code, and curiosity — from SQL pipelines to machine learning prototypes.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#projects">See the work →</a>
+      <a class="btn btn-ghost" href="#contact">Get in touch</a>
+    </div>
+  </div>
+  <div class="scroll-cue"><span class="line"></span> SCROLL</div>
+</header>
+
+<section id="about">
+  <div class="section-head shatter-target">
+    <span class="section-num">01</span>
+    <h2 class="section-title">About</h2>
+    <div class="section-rule"></div>
+  </div>
+  <div class="about-grid">
+    <div class="about-text shatter-target">
+      <p>I'm a Computer Science undergraduate at <strong>Amrita Vishwa Vidyapeetham, Nagercoil</strong>, currently in my second year and expecting to graduate in <strong>2029</strong>. Alongside my degree, I'm pursuing a <strong>BS in Data Science and Applications from IIT Madras</strong> through their online program.</p>
+      <p>I like building things that turn raw data into something useful — whether that's a SQL report, a prediction model, or a pricing engine built in 24 hours at a hackathon. I've picked up most of what I know by actually shipping projects: two internships, four hackathons, and a handful of builds spanning Python, Java, and the web.</p>
+    </div>
+    <div class="about-stats shatter-target">
+      <div class="stat-card"><div class="num">8.8</div><div class="label">CGPA / 10</div></div>
+      <div class="stat-card"><div class="num">2</div><div class="label">INTERNSHIPS COMPLETED</div></div>
+      <div class="stat-card"><div class="num">4</div><div class="label">HACKATHONS ENTERED</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="section-head shatter-target">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Experience</h2>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="exp-item shatter-target">
+    <div class="exp-date">JUL 2026 — AUG 2026</div>
+    <div>
+      <div class="exp-role">Data Analysis Intern (SQL)</div>
+      <div class="exp-org">Cognevance</div>
+      <ul>
+        <li>Designed and analyzed relational databases using SQL — schema design, joins, and aggregate functions (COUNT, SUM, AVG, MAX, MIN) for reporting use cases.</li>
+        <li>Wrote advanced queries with JOINs, GROUP BY, HAVING, and subqueries to analyze e-commerce sales trends and revenue growth.</li>
+        <li>Built SQL views, stored procedures, and recurring sales reports; documented business insights and recommendations.</li>
+        <li>Worked on enterprise-level database systems — indexing, triggers, and dashboard queries — with exposure to Power BI and Tableau.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="exp-item shatter-target">
+    <div class="exp-date">APR 2026 — MAY 2026</div>
+    <div>
+      <div class="exp-role">Data Science Intern</div>
+      <div class="exp-org">Glowlogics</div>
+      <ul>
+        <li>Worked on data cleaning, exploratory analysis, and model building.</li>
+        <li>Applied Python-based data science tools to analyze datasets and generate insights.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="section-head shatter-target">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Projects</h2>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="projects-scroll" id="projects-scroll">
+    <div class="project-card shatter-target">
+      <div class="project-tag">Machine Learning</div>
+      <h3>Heart Disease Prediction</h3>
+      <p>A bioinformatics and computational biology prototype applying machine learning models to predict heart disease risk from patient health data.</p>
+      <div class="project-stack"><span class="chip">Python</span><span class="chip">ML</span><span class="chip">Bioinformatics</span></div>
+    </div>
+
+    <div class="project-card shatter-target">
+      <div class="project-tag">Hackathon build — Top 12 finalist</div>
+      <h3>Intelligent Pricing App</h3>
+      <p>A dynamic pricing engine built at Hackmalenadu that adjusts prices in real time based on demand and market signals.</p>
+      <div class="project-stack"><span class="chip">Python</span><span class="chip">Pricing Logic</span></div>
+    </div>
+
+    <div class="project-card shatter-target">
+      <div class="project-tag">Java</div>
+      <h3>Parking Lot Management System</h3>
+      <p>A system to manage vehicle entry and exit, slot allocation, and billing for a parking facility.</p>
+      <div class="project-stack"><span class="chip">Java</span><span class="chip">OOP</span></div>
+    </div>
+
+    <div class="project-card shatter-target">
+      <div class="project-tag">Python</div>
+      <h3>Phone Number Tracker</h3>
+      <p>An application to trace phone number details such as location and carrier information.</p>
+      <div class="project-stack"><span class="chip">Python</span></div>
+    </div>
+  </div>
+  <div class="scroll-hint">← scroll sideways to see all projects →</div>
+</section>
+
+<section id="hackathons">
+  <div class="section-head shatter-target">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Hackathons</h2>
+    <div class="section-rule"></div>
+  </div>
+  <div class="hack-grid">
+    <div class="hack-card shatter-target">
+      <span class="hack-badge top">TOP 12 FINALIST</span>
+      <h3>Hackmalenadu</h3>
+      <p>Built an intelligent pricing app prototype using demand and market signals.</p>
+    </div>
+    <div class="hack-card shatter-target">
+      <span class="hack-badge runner">RUNNER-UP</span>
+      <h3>Hackfest '25</h3>
+      <p>Built a prototype solution as part of a competitive hackathon team.</p>
+    </div>
+    <div class="hack-card shatter-target">
+      <span class="hack-badge part">PARTICIPANT</span>
+      <h3>Nextra Hackathon</h3>
+      <p>Built a prototype solution as part of a competitive hackathon team.</p>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="section-head shatter-target">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Skills</h2>
+    <div class="section-rule"></div>
+  </div>
+  <div class="skills-wrap shatter-target">
+    <span class="skill-tag">Python</span>
+    <span class="skill-tag">Java</span>
+    <span class="skill-tag">C</span>
+    <span class="skill-tag">SQL</span>
+    <span class="skill-tag">HTML</span>
+    <span class="skill-tag">CSS</span>
+    <span class="skill-tag">JavaScript</span>
+    <span class="skill-tag">React</span>
+    <span class="skill-tag">Data Analysis</span>
+    <span class="skill-tag">Machine Learning</span>
+  </div>
+</section>
+
+<section id="contact" class="contact-section">
+  <div class="section-head shatter-target">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Contact</h2>
+    <div class="section-rule"></div>
+  </div>
+  <div class="shatter-target">
+    <h3 class="contact-title">Let's build<br>something <span class="accent">together.</span></h3>
+    <p class="contact-sub">Open to internships, collaborations, and hackathon teams. Reach out — I reply fast.</p>
+    <div class="contact-links">
+      <a class="btn btn-primary" href="mailto:varshasanmuhigopinath08@gmail.com">Email me →</a>
+      <a class="btn btn-ghost" href="https://github.com/varshasanmuhigopinath08-hub" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/varsha-sanmuhi-gopinath-315380379" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>Varsha Sanmuhi G — 2026</span>
+  <span>Nagercoil, India</span>
+</footer>
+
+<script>
+  // Nav background on scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive:true });
+
+  // Shatter-reveal tile overlays
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const palette = ['#171B36','#1F2447','#6EE7F9','#FF6B6B','#FFD166'];
+
+  function buildShatter(el){
+    const cols = window.innerWidth < 640 ? 6 : 9;
+    const rows = 5;
+    const overlay = document.createElement('div');
+    overlay.className = 'shatter-overlay';
+    overlay.style.gridTemplateColumns = 'repeat(' + cols + ',1fr)';
+    overlay.style.gridTemplateRows = 'repeat(' + rows + ',1fr)';
+    for(let i=0;i<cols*rows;i++){
+      const t = document.createElement('div');
+      t.className = 'shatter-tile';
+      const dx = (Math.random()*2-1) * 130;
+      const dy = (Math.random()*2-1) * 90;
+      const rot = (Math.random()*2-1) * 35;
+      const delay = Math.random() * 240;
+      t.style.setProperty('--dx', dx.toFixed(0)+'px');
+      t.style.setProperty('--dy', dy.toFixed(0)+'px');
+      t.style.setProperty('--rot', rot.toFixed(0)+'deg');
+      t.style.setProperty('--delay', delay.toFixed(0)+'ms');
+      const colorPick = Math.random();
+      t.style.background = colorPick > 0.82 ? palette[2+Math.floor(Math.random()*3)] : (Math.random() > 0.5 ? palette[0] : palette[1]);
+      overlay.appendChild(t);
+    }
+    el.style.position = el.style.position || 'relative';
+    el.appendChild(overlay);
+  }
+
+  document.querySelectorAll('.shatter-target').forEach(el => {
+    if(!reduced) buildShatter(el);
+  });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      entry.target.classList.toggle('revealed', entry.isIntersecting);
+    });
+  }, { threshold: 0.18 });
+
+  document.querySelectorAll('.shatter-target').forEach(el => io.observe(el));
+
+  // Ambient hero canvas — drifting data points
+  const canvas = document.getElementById('hero-canvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, points = [];
+
+  function resize(){
+    w = canvas.width = canvas.offsetWidth;
+    h = canvas.height = canvas.offsetHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const colors = ['#6EE7F9','#FF6B6B','#FFD166'];
+  for(let i=0;i<46;i++){
+    points.push({
+      x: Math.random()*w,
+      y: Math.random()*h,
+      size: Math.random()*3+1.5,
+      vx: (Math.random()-0.5)*0.15,
+      vy: (Math.random()-0.5)*0.15,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      alpha: Math.random()*0.5+0.15
+    });
+  }
+
+  function drawFrame(){
+    ctx.clearRect(0,0,w,h);
+    points.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < 0) p.x = w; if(p.x > w) p.x = 0;
+      if(p.y < 0) p.y = h; if(p.y > h) p.y = 0;
+      ctx.globalAlpha = p.alpha;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(p.x, p.y, p.size, p.size);
+    });
+    ctx.globalAlpha = 1;
+    if(!reduced) requestAnimationFrame(drawFrame);
+  }
+  drawFrame();
+</script>
+
+</body>
+</html>
